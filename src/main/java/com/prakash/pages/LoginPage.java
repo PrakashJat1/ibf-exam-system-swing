@@ -1,17 +1,49 @@
-package com.prakash;
+package com.prakash.pages;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.prakash.controller.StudentController;
-import com.prakash.entity.Student;
+import com.prakash.entity.User;
+import com.prakash.controller.UserController;
+import org.jdesktop.swingx.JXLabel;
+import org.jdesktop.swingx.JXPanel;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.SQLException;
+import java.net.URI;
 
 public class LoginPage {
+
+
+    //mode button
+    public static JToggleButton modeButton(JFrame frame) {
+        // ImageIcon
+        ImageIcon themeIcon = resizeIcon(new ImageIcon("src/image/LigthMode.png"), 30, 30);
+
+        // Theme Toggle Button
+        JToggleButton themeButton = new JToggleButton(themeIcon);
+        themeButton.putClientProperty("JButton.buttonType","roundRect");
+
+        themeButton.addActionListener(e -> {
+            if (themeButton.isSelected()) {
+                FlatMacDarkLaf.setup();
+                themeButton.setIcon(resizeIcon(new ImageIcon("src/image/DarkMode.png"), 30, 30));
+
+            } else {
+                FlatMacLightLaf.setup();
+                themeButton.setIcon(resizeIcon(new ImageIcon("src/image/LigthMode.png"), 30, 30));
+            }
+            SwingUtilities.updateComponentTreeUI(frame);
+
+        });
+
+        return themeButton;
+
+    }
 
 
     // Resize Icon Method
@@ -20,54 +52,63 @@ public class LoginPage {
     }
 
 
-    public static void main(String[] args) throws SQLException {
+   public LoginPage(JFrame frame){
+
+
+       JPanel mainPanel = new JPanel(new BorderLayout());
         FlatMacLightLaf.setup();
 
         // Font
         Font f = new Font("SansSerif", Font.BOLD, 14);
 
-        // Create Frame
-        JFrame frame = new JFrame("Login Page");
-        frame.setSize(600, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridBagLayout());
+       // 🔘 Mode Button Panel (Top)
+       JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Aligns to the right
+       JToggleButton modeButton = modeButton(frame);
+       modePanel.add(modeButton);
 
-        // ImageIcon
-        ImageIcon themeIcon = resizeIcon(new ImageIcon("src/image/LigthMode.png"), 30, 30);
 
-        // Theme Toggle Button
-        JToggleButton themeButton = new JToggleButton(themeIcon);
-//        themeButton.setPreferredSize(new Dimension(40, 40));
-        themeButton.putClientProperty("JButton.buttonType","roundRect");
+       // 🎨 Center Panel (Contains Logo, Label & Login Form)
+       JPanel centerPanel = new JPanel(new BorderLayout());
 
-        themeButton.addActionListener(e -> {
-            if (themeButton.isSelected()) {
-                    FlatMacDarkLaf.setup();
-                    themeButton.setIcon(resizeIcon(new ImageIcon("src/image/DarkMode.png"), 30, 30));
+       // 🖼️ Logo Panel
+       JPanel logoPanel = new JPanel(new GridBagLayout());
+       ImageIcon logo = resizeIcon(new ImageIcon("src/image/IBlogo.png"), 100, 100);
+       JLabel logoLabel = new JLabel(logo);
+       JLabel title = new JLabel("IB  ONLINE  EXAMINATION  SYSTEM", SwingConstants.CENTER);
+       title.setFont(new Font("Serif", Font.BOLD, 24)); //
+       title.setForeground(new Color(30, 144, 255)); //
+       title.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            } else {
-                FlatMacLightLaf.setup();
-                themeButton.setIcon(resizeIcon(new ImageIcon("src/image/LigthMode.png"), 30, 30));
-            }
-            SwingUtilities.updateComponentTreeUI(frame);
-        });
+       // Add MouseListener for clicking
+       logoLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+       logoLabel.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               try {
+                   Desktop.getDesktop().browse(new URI("https://www.infobeans.com/infobeans-foundation/")); // Replace with your URL
+               } catch (Exception ex) {
+                   ex.printStackTrace();
+               }
+           }
+       });
+       // Align Logo & Title in Center
+       logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.Y_AXIS));
+       title.setAlignmentX(Component.CENTER_ALIGNMENT);
+       logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+       logoPanel.add(logoLabel);
+       logoPanel.add(title);
 
-        // Create Panel for Login
+       // Create Panel for Login
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setPreferredSize(new Dimension(400, 300));
-        panel.setBorder(BorderFactory.createTitledBorder("Login"));
+        panel.setPreferredSize(new Dimension(500, 400));
+       TitledBorder border = BorderFactory.createTitledBorder("Login");
+       border.setTitleFont(f);
+        panel.setBorder(border);
         panel.putClientProperty("JPanel.background",UIManager.getColor("Panel.background"));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.NONE;
 
         // Components
-        JLabel userLabel = new JLabel("Username:");
+        JLabel userLabel = new JLabel("Email:");
         userLabel.setFont(f);
         JTextField userText = new JTextField(15);
         userText.putClientProperty("JComponent.roundRect",true);
@@ -79,12 +120,24 @@ public class LoginPage {
 
         JButton loginButton = new JButton("Login");
         loginButton.putClientProperty("JButton.buttonType","roundRect");
+        loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        loginButton.setForeground(Color.BLACK);
+        loginButton.setFont(f);
 
         JLabel register = new JLabel("<html><u> Register Here </u></html>");
-
-
+        register.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        register.setForeground(Color.BLUE);
+        register.setFont(f);
 
         // Add Components to Panel
+       GridBagConstraints gbc = new GridBagConstraints();
+       gbc.gridx = 0;
+       gbc.gridy = 0;
+       gbc.weightx = 1.0;
+       gbc.weighty = 1.0;
+       gbc.insets = new Insets(5, 5, 5, 5);
+       gbc.fill = GridBagConstraints.NONE;
+
         panel.add(userLabel, gbc);
         gbc.gridy++;
         panel.add(userText, gbc);
@@ -103,15 +156,15 @@ public class LoginPage {
         gbcPanel.weighty = 1.0;
         gbcPanel.fill = GridBagConstraints.NONE;
         gbcPanel.insets = new Insets(30,5,5,5);
-        frame.add(panel, gbcPanel);
 
-        // Add Theme Button to Top-Right
-        GridBagConstraints gbcTheme = new GridBagConstraints();
-        gbcTheme.gridx = 1;
-        gbcTheme.gridy = 0;
-        gbcTheme.anchor = GridBagConstraints.NORTHEAST;
-        gbcTheme.insets = new Insets(10, 10, 0, 10);
-        frame.add(themeButton, gbcTheme);
+
+
+       JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 100));
+       wrapperPanel.add(panel);
+
+       JPanel themePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+       JToggleButton themeBut = modeButton(frame);
+       themePanel.add(themeBut);
 
 
 
@@ -127,15 +180,26 @@ public class LoginPage {
         gbc.gridy++;
         panel.add(register,gbc);
 
-        frame.setLocationRelativeTo(null); // Center the frame
-        frame.setVisible(true);
+
+       centerPanel.add(logoPanel,BorderLayout.NORTH);
+       centerPanel.add(wrapperPanel,BorderLayout.CENTER);
+
+       mainPanel.add(modePanel,BorderLayout.NORTH);
+       mainPanel.add(centerPanel,BorderLayout.CENTER);
+
+//       frame.setContentPane(new BackgroundPanel("src/image/IBlogo.png"));
+       frame.add(mainPanel);
+       frame.setLocationRelativeTo(null); // Center the frame
+       frame.setVisible(true);
 
 
 
-            register.addMouseListener(new MouseListener() {
+        //Register
+       register.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    JOptionPane.showMessageDialog(frame,"Register","Success",JOptionPane.INFORMATION_MESSAGE);
+                    frame.remove(mainPanel);
+                    new RegisterPage(frame);
                 }
 
                 @Override
@@ -160,27 +224,29 @@ public class LoginPage {
             });
 
 
-            StudentController studentController = new StudentController();
-            //verify Student
-            loginButton.addActionListener(e -> {
-                Student student = new Student();
-                student.setEmail(userText.getText());
-                student.setPassword(new String(passText.getPassword()));
+        //verify Student
+        loginButton.addActionListener(e -> {
+            User user = new User();
+                user.setEmail(userText.getText());
+                user.setPassword(new String(passText.getPassword()));
 
-
-                try {
-                    if(studentController.verifyStudent(student))
+                //user decide
+                String role = new UserController().verifyUser(user);
+                if (role.equalsIgnoreCase("STUDENT")) {
+                        frame.dispose();
+                        new StudentDashboard(new StudentController().getStudent(user.getEmail(), user.getPassword()));
+                    }
+                    else if (role.equalsIgnoreCase("ADMIN"))
                     {
-                        JOptionPane.showMessageDialog(frame,"Login Succesfully...!","Success",JOptionPane.INFORMATION_MESSAGE);
+                        frame.remove(mainPanel);
+                        new AdminDashboard(frame);
                     }
-                    else {
-                        JOptionPane.showMessageDialog(frame,"Invalid Username or Password","Error",JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+                    else if(role.equalsIgnoreCase("UNAUTHORIZED STUDENT :("))
+                    JOptionPane.showMessageDialog(frame,"UNAUTHORIZED STUDENT :(","Error",JOptionPane.ERROR_MESSAGE);
+                    else
+                    JOptionPane.showMessageDialog(frame,"Please Register First..!","Error",JOptionPane.ERROR_MESSAGE);
             });
 }
+}
 
-    }
 
